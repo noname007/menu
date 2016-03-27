@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <time.h>
 #include "menu.h"
+   #include <sys/types.h>
+       #include <unistd.h>
+
 
 #define FONTSIZE 10
 int PrintMenuOS()
@@ -147,6 +150,25 @@ int TimeAsm(int argc, char *argv[])
     printf("time:%d:%d:%d:%d:%d:%d\n",t->tm_year+1900, t->tm_mon, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec);
     return 0;
 }
+
+int Pid(int argc,char *argv[])
+{
+    printf("%d\n",getpid());
+    return 0;
+
+}
+
+int pid_asm(int argc,char *argv[])
+{
+    pid_t pid;
+        asm volatile(
+            "mov $20,%%eax\n\t"
+            "int $0x80\n\t"
+            "mov %%eax,%0"
+            :"=m"(pid)
+        );
+    printf("pid asm:%d\n",pid);
+}
 int main()
 {
     PrintMenuOS();
@@ -155,6 +177,8 @@ int main()
     MenuConfig("quit","Quit from MenuOS",Quit);
     MenuConfig("time","Show System Time",Time);
     MenuConfig("time-asm","Show System Time(asm)",TimeAsm);
+    MenuConfig("pid","get now process id",Pid);
+    MenuConfig("pid-asm","get now process id",pid_asm);
     ExecuteMenu();
 }
 
